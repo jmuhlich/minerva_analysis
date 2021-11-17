@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from numcodecs import compat_ext  # Needed for pyinstaller
 from numcodecs import blosc  # Needed for pyinstaller
-import xmlschema  # Needed for pyinstaller
+#import xmlschema  # Needed for pyinstaller
 
 import os
 import json
@@ -21,7 +21,7 @@ if getattr(sys, 'frozen', False):
     data_path = Path(Path(sys.executable).parent / 'data')
     multiprocessing.freeze_support()
 else:
-    data_path = Path("minerva_analysis/data").resolve()
+    data_path = Path("/tmp/data")
 # print('Data Path', str(data_path), str((data_path).resolve()))
 # Make the Data Path
 data_path.mkdir(parents=True, exist_ok=True)

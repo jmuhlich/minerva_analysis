@@ -1,4 +1,4 @@
-from sklearn.neighbors import BallTree
+#from sklearn.neighbors import BallTree
 import numpy as np
 import pandas as pd
 from PIL import ImageColor
@@ -7,7 +7,7 @@ import os
 import io
 from pathlib import Path
 from pathlib import PurePath
-from ome_types import from_xml
+#from ome_types import from_xml
 from minerva_analysis import config_json_path, data_path, cwd_path
 from minerva_analysis.server.utils import pyramid_assemble
 from minerva_analysis.server.models import database_model
@@ -17,11 +17,11 @@ import pickle
 import tifffile as tf
 import re
 import zarr
-from dask import dataframe as dd
-import cv2
-from sklearn.mixture import GaussianMixture
-from scipy.stats import norm
-from skimage.measure import block_reduce
+#from dask import dataframe as dd
+#import cv2
+#from sklearn.mixture import GaussianMixture
+#from scipy.stats import norm
+#from skimage.measure import block_reduce
 
 ball_tree = None
 database = None
@@ -766,17 +766,23 @@ def get_channel_gmm(channel_name, datasource_name):
 
     return packet_gmm
 
+
+import minerva_lib.client
+client = minerva_lib.client.MinervaClient('https://cloud.minerva.im/dev', 'us-east-1', '2amp6q8t55a0usvo63cqu5vj11')
+client.authenticate('public@minerva.test', 'Peter_wears_blue_polo5')
+
 def generate_zarr_png(datasource_name, channel, level, tile):
-    if config is None:
-        load_datasource(datasource_name)
+    #if config is None:
+    #    load_datasource(datasource_name)
     global channels
     global seg
     [tx, ty] = tile.replace('.png', '').split('_')
     tx = int(tx)
     ty = int(ty)
     level = int(level)
-    tile_width = config[datasource_name]['tileWidth']
-    tile_height = config[datasource_name]['tileHeight']
+    #tile_width = config[datasource_name]['tileWidth']
+    #tile_height = config[datasource_name]['tileHeight']
+    tile_width = tile_height = 1024
     ix = tx * tile_width
     iy = ty * tile_height
     segmentation = False
@@ -790,11 +796,12 @@ def generate_zarr_png(datasource_name, channel, level, tile):
         tile = tile.view('uint8').reshape(tile.shape + (-1,))[..., [0, 1, 2]]
         tile = np.append(tile, np.zeros((tile.shape[0], tile.shape[1], 1), dtype='uint8'), axis=2)
     else:
-        if isinstance(channels, zarr.Array):
-            tile = channels[channel_num, iy:iy + tile_height, ix:ix + tile_width]
-        else:
-            tile = channels[level][channel_num, iy:iy + tile_height, ix:ix + tile_width]
-            tile = tile.astype('uint16')
+        tile = client.get_raw_tile('fb726358-5e66-46b8-8fff-b193428f9c5c', ix, iy, 0, 0, channel_num, level, tile_width)
+        # if isinstance(channels, zarr.Array):
+        #     tile = channels[channel_num, iy:iy + tile_height, ix:ix + tile_width]
+        # else:
+        #     tile = channels[level][channel_num, iy:iy + tile_height, ix:ix + tile_width]
+        #     tile = tile.astype('uint16')
 
     # tile = np.ascontiguousarray(tile, dtype='uint32')
     # png = tile.view('uint8').reshape(tile.shape + (-1,))[..., [2, 1, 0]]

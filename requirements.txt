@@ -1,0 +1,15 @@
+Flask==1.1.2
+flask-sqlalchemy
+minerva-lib==0.0.5
+numpy
+orjson
+pandas
+pillow==8.0.0
+requests
+#scikit-learn==0.20.2
+#scikit-image==0.14.2
+#scipy
+#tifffile==2020.10.1
+waitress
+wheel
+zarr
